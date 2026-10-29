@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Flipbook — Akshara Prayanam</title>
+  <meta name="description" content="Read a PDF as a real book — turn pages with a click, a drag or a swipe.">
+  <meta name="theme-color" content="#123229">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+Telugu:wght@400;600&family=Playfair+Display:ital,wght@0,600;1,500&display=swap">
+  <link rel="stylesheet" href="css/flipbook.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="topbar__brand" id="home-link" href="#" hidden>
+      <svg viewBox="0 0 56 48" aria-hidden="true" focusable="false"><circle cx="34" cy="14" r="8.5" fill="#EBD5A6"/><path d="M28 31.5V20c-6-4.5-13-5-21-1.5V31c8-3.2 15-3 21 .5z" fill="#FAF7F0" stroke="#C49A52"/><path d="M28 31.5V20c6-4.5 13-5 21-1.5V31c-8-3.2-15-3-21 .5z" fill="#FAF7F0" stroke="#C49A52"/><path d="M4 33.5c9-3.6 17-3.6 24 0 7-3.6 15-3.6 24 0v2.5c-9-3.4-17-3.4-24 .2-7-3.6-15-3.6-24-.2z" fill="#E2C285"/></svg>
+      <span id="home-label">Akshara Prayanam</span>
+    </a>
+    <h1 class="topbar__title" id="book-title">Flipbook</h1>
+    <button class="btn btn--ghost feedback-open" type="button" id="feedback-open" hidden aria-haspopup="dialog" aria-controls="feedback-dialog">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H6l-3 2 1-4a7.5 7.5 0 1 1 16-5.5Z"/><path d="M8 11h8M8 14h5"/></svg>
+      <span>Share feedback</span>
+    </button>
+    <label class="btn btn--ghost" id="open-btn" for="file-input" hidden>
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 15V4"/><path d="m7 9 5-5 5 5"/><path d="M5 20h14"/></svg>
+      <span>Open PDF</span>
+    </label>
+    <input class="sr-only" type="file" id="file-input" accept="application/pdf,.pdf">
+  </header>
+
+  <main class="stage" id="stage">
+    <section class="dropzone" id="dropzone" hidden aria-labelledby="dropzone-title">
+      <svg class="dropzone__art" viewBox="0 0 120 90" aria-hidden="true" focusable="false">
+        <path d="M60 78C45 70 25 68 8 72V14c17-4 37-2 52 6z" fill="#FFFDF7" stroke="#C49A52"/>
+        <path d="M60 78c15-8 35-10 52-6V14c-17-4-37-2-52 6z" fill="#FBF3E6" stroke="#C49A52"/>
+        <path d="M60 20v58" stroke="#C49A52"/>
+        <path class="dropzone__page" d="M60 20c12-6 28-8 44-5v52c-16-3-32-1-44 6z" fill="#FFFDF7" stroke="#8E3B36" stroke-opacity=".5"/>
+        <path d="M18 30h30M18 38h30M18 46h22M72 30h28M72 38h28M72 46h20" stroke="#D9CBB0"/>
+      </svg>
+      <h2 id="dropzone-title">Turn your PDF into a book</h2>
+      <p>Choose a PDF or drag it here. Its pages appear as a real book you can turn with a click, a drag or a swipe.</p>
+      <label class="btn btn--gold" for="file-input">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 15V4"/><path d="m7 9 5-5 5 5"/><path d="M5 20h14"/></svg>
+        Choose PDF
+      </label>
+      <p class="dropzone__note">The file opens in your browser only — it is not uploaded anywhere.</p>
+    </section>
+
+    <div class="loader" id="loader" role="status" hidden>
+      <div class="loader__book" aria-hidden="true"><span></span><span></span><span></span></div>
+      <p class="loader__text" id="loader-text">Opening your book…</p>
+      <div class="loader__bar"><span id="loader-bar"></span></div>
+    </div>
+
+    <div class="error" id="error" role="alert" hidden>
+      <p id="error-text"></p>
+      <button class="btn btn--gold" type="button" id="retry-book" hidden>Try again</button>
+      <label class="btn btn--gold" for="file-input" id="error-pick">Choose another PDF</label>
+    </div>
+
+    <section class="password-panel" id="password-panel" aria-labelledby="password-title" hidden>
+      <form class="password-form" id="password-form">
+        <h2 id="password-title">Unlock your book</h2>
+        <p id="password-hint">Enter the PDF password sent with your book link.</p>
+        <label for="book-password">Book password</label>
+        <input id="book-password" type="password" required autocomplete="off" spellcheck="false" aria-describedby="password-hint password-error">
+        <p class="password-form__error" id="password-error" role="alert"></p>
+        <div class="password-form__actions">
+          <button class="btn btn--gold" type="submit">Unlock book</button>
+          <button class="btn btn--ghost" type="button" id="password-cancel">Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <div class="book-wrap" id="book-wrap" hidden>
+      <div class="book" id="book"></div>
+    </div>
+
+    <div class="drop-overlay" id="drop-overlay" hidden aria-hidden="true">
+      <p>Drop the PDF to open it</p>
+    </div>
+  </main>
+
+  <dialog class="feedback-dialog" id="feedback-dialog" aria-labelledby="feedback-title">
+    <div class="feedback-dialog__head">
+      <div>
+        <p class="feedback-dialog__eyebrow">A reader's note</p>
+        <h2 id="feedback-title">Your thoughts matter</h2>
+      </div>
+      <button class="icon-btn" type="button" id="feedback-close" aria-label="Close feedback form">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <form class="feedback-form" id="feedback-form">
+      <label for="feedback-text">Your honest feedback</label>
+      <textarea id="feedback-text" rows="5" maxlength="2000" placeholder="I’d love to hear your thoughts. Please feel free to share your honest feedback." required></textarea>
+      <p class="feedback-form__note">This opens WhatsApp with your message. It is sent only if you choose to send it there.</p>
+      <div class="feedback-form__actions">
+        <button class="btn btn--ghost" type="button" id="feedback-cancel">Cancel</button>
+        <a class="btn btn--gold" id="feedback-send" href="#" target="_blank" rel="noopener noreferrer" aria-disabled="true" tabindex="-1">Continue to WhatsApp</a>
+      </div>
+    </form>
+  </dialog>
+
+  <nav class="controls" id="controls" aria-label="Book controls" hidden>
+    <div class="controls__group">
+      <button class="icon-btn" type="button" id="btn-first" aria-label="First page">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 5v14"/><path d="m17 5-7 7 7 7"/></svg>
+      </button>
+      <button class="icon-btn icon-btn--lg" type="button" id="btn-prev" aria-label="Previous page">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m15 5-7 7 7 7"/></svg>
+      </button>
+    </div>
+
+    <form class="pager" id="pager">
+      <label class="sr-only" for="page-input">Go to page</label>
+      <input id="page-input" type="number" inputmode="numeric" min="1" value="1">
+      <span class="pager__total">/ <span id="page-total">0</span></span>
+    </form>
+
+    <div class="controls__group">
+      <button class="icon-btn icon-btn--lg" type="button" id="btn-next" aria-label="Next page">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m9 5 7 7-7 7"/></svg>
+      </button>
+      <button class="icon-btn" type="button" id="btn-last" aria-label="Last page">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18 5v14"/><path d="m7 5 7 7-7 7"/></svg>
+      </button>
+    </div>
+
+    <div class="controls__group controls__group--end">
+      <button class="icon-btn" type="button" id="btn-sound" aria-pressed="true" aria-label="Page-turn sound">
+        <svg class="icon icon--on" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>
+        <svg class="icon icon--off" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="m16 9.5 5 5M21 9.5l-5 5"/></svg>
+      </button>
+      <button class="icon-btn" type="button" id="btn-fullscreen" aria-pressed="false" aria-label="Full screen">
+        <svg class="icon icon--on" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+        <svg class="icon icon--off" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>
+      </button>
+    </div>
+  </nav>
+
+  <p class="sr-only" id="announcer" aria-live="polite"></p>
+
+  <noscript><p class="noscript">This flipbook needs JavaScript to display the PDF.</p></noscript>
+
+  <script src="vendor/pdf.min.js"></script>
+  <script src="vendor/page-flip.browser.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/sound.js"></script>
+  <script src="js/flipbook.js"></script>
+</body>
+</html>
