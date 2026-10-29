@@ -50,7 +50,7 @@
 
   var MIN_PAGE_WIDTH = 240;
   var MAX_FILE_MB = 200;
-  var PDF_RANGE_CHUNK_SIZE = 1024 * 1024;
+  var PDF_RANGE_CHUNK_SIZE = 64 * 1024;
   var RENDER_BEHIND = 1;
   var RENDER_AHEAD = 4;
   /* Only PDFs inside /books may be opened through the ?pdf= link parameter. */
@@ -358,9 +358,7 @@
 
     try {
       var loadingOptions = {
-        rangeChunkSize: PDF_RANGE_CHUNK_SIZE,
-        disableAutoFetch: true,
-        disableStream: true
+        rangeChunkSize: PDF_RANGE_CHUNK_SIZE
       };
       if (source.data) loadingOptions.data = source.data;
       else loadingOptions.url = source.url;
