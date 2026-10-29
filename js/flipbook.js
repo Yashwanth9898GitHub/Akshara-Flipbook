@@ -50,6 +50,9 @@
 
   var MIN_PAGE_WIDTH = 240;
   var MAX_FILE_MB = 200;
+  var PDF_RANGE_CHUNK_SIZE = 1024 * 1024;
+  var RENDER_BEHIND = 1;
+  var RENDER_AHEAD = 4;
   /* Only PDFs inside /books may be opened through the ?pdf= link parameter. */
   var SAFE_PDF_PARAM = /^books\/[\w\-. ()]+\.pdf$/i;
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -319,11 +322,13 @@
     state.rendered[i] = true;
   }
 
-  /* Next page to render: the unrendered page closest to where the reader is (forward first). */
+  /* Keep nearby pages ready without rendering the entire book in the background. */
   function nextToRender() {
     var best = -1;
     var bestScore = Infinity;
-    for (var i = 0; i < state.total; i++) {
+    var first = Math.max(0, state.current - RENDER_BEHIND);
+    var last = Math.min(state.total - 1, state.current + RENDER_AHEAD);
+    for (var i = first; i <= last; i++) {
       if (state.rendered[i]) continue;
       var d = i - state.current;
       var score = d >= -1 ? Math.abs(d) : Math.abs(d) + 0.5;
@@ -352,7 +357,14 @@
     progress(0.02, 'Opening your book…');
 
     try {
-      var task = pdfjsLib.getDocument(source.data ? { data: source.data } : { url: source.url });
+      var loadingOptions = {
+        rangeChunkSize: PDF_RANGE_CHUNK_SIZE,
+        disableAutoFetch: true,
+        disableStream: true
+      };
+      if (source.data) loadingOptions.data = source.data;
+      else loadingOptions.url = source.url;
+      var task = pdfjsLib.getDocument(loadingOptions);
       state.loadingTask = task;
       task.onPassword = function (updatePassword, reason) {
         if (token !== state.token) return;
