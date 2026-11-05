@@ -24,7 +24,7 @@ jobs:
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
-      - name: Assemble site and fetch encrypted book assets
+      - name: Assemble site and fetch encrypted Amma book
         shell: bash
         run: |
           mkdir site
@@ -33,9 +33,6 @@ jobs:
           curl --fail --location --retry 3 \
             'https://github.com/Yashwanth9898GitHub/Akshara-Flipbook/releases/download/book-pdfs-v1/AMMA-encrypted.pdf' \
             --output site/books/AMMA-encrypted.pdf
-          curl --fail --location --retry 3 \
-            'https://github.com/Yashwanth9898GitHub/Akshara-Flipbook/releases/download/book-pdfs-v1/wrong-education-encrypted.pdf' \
-            --output site/books/wrong-education-encrypted.pdf
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
