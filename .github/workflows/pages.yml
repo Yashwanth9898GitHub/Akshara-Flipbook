@@ -34,8 +34,8 @@ jobs:
             'https://github.com/Yashwanth9898GitHub/Akshara-Flipbook/releases/download/book-pdfs-v1/AMMA-encrypted.pdf' \
             --output site/books/AMMA-encrypted.pdf
           curl --fail --location --retry 3 \
-            'https://github.com/Yashwanth9898GitHub/Akshara-Flipbook/releases/download/book-pdfs-v1/wrong-education-encrypted.pdf' \
-            --output site/books/wrong-education-encrypted.pdf
+            'https://github.com/Yashwanth9898GitHub/Akshara-Flipbook/releases/download/book-pdfs-v1/wrong-education-encrypted-v2.pdf' \
+            --output site/books/wrong-education-encrypted-v2.pdf
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
