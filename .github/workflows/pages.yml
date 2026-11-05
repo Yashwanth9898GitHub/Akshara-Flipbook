@@ -36,6 +36,9 @@ jobs:
           curl --fail --location --retry 3 \
             'https://github.com/Yashwanth9898GitHub/Akshara-Flipbook/releases/download/book-pdfs-v1/wrong-education-encrypted-v3.pdf' \
             --output site/books/wrong-education-encrypted-v3.pdf
+          curl --fail --location --retry 3 \
+            'https://github.com/Yashwanth9898GitHub/Akshara-Flipbook/releases/download/book-pdfs-v1/guddi-prema-encrypted.pdf' \
+            --output site/books/guddi-prema-encrypted.pdf
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
